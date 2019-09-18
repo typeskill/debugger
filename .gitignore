@@ -1,0 +1,9 @@
+.idea
+.vscode
+.jest
+.watchmanconfig
+temp
+node_modules
+lib
+coverage
+

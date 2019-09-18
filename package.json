@@ -1,0 +1,62 @@
+{
+  "name": "@typeskill/debugger",
+  "version": "1.0.0",
+  "description": "A debug utility for typeskill.",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run build:clean; npm run build:types && npm run build:js",
+    "build:types": "tsc --project tsconfig.json",
+    "build:js": "babel --config-file ./babel.config.js src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline",
+    "build:clean": "rimraf lib",
+    "prepare": "npm run build",
+    "test": "npm run validate:typescript && npm run validate:lint",
+    "validate:typescript": "tsc --project ./ --noEmit",
+    "validate:lint": "eslint --ext .ts --ext .tsx 'src/'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/typeskill/debugger.git"
+  },
+  "keywords": [
+    "typeskill",
+    "debugger"
+  ],
+  "author": "Jules Samuel Randolph",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/typeskill/debugger/issues"
+  },
+  "homepage": "https://github.com/typeskill/debugger#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.6.0",
+    "@babel/core": "^7.6.0",
+    "@types/react": "^16.9.2",
+    "@types/react-native": "^0.60.15",
+    "@typescript-eslint/eslint-plugin": "^2.3.0",
+    "@typescript-eslint/parser": "^2.3.0",
+    "@typeskill/eslint-config": "^1.0.0",
+    "eslint": "^6.4.0",
+    "eslint-config-prettier": "^6.3.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-react": "^7.14.3",
+    "metro-react-native-babel-preset": "^0.56.0",
+    "prettier": "^1.18.2",
+    "react": "16.8.6",
+    "react-native": "0.60.5",
+    "rimraf": "^3.0.0",
+    "typescript": "^3.6.3"
+  },
+  "dependencies": {
+    "@types/react-native-drawer": "^2.5.2",
+    "@typeskill/typer": "^0.10.0-beta.1",
+    "react-native-drawer": "^2.5.1",
+    "react-native-smart-tip": "^2.0.0",
+    "react-native-syntax-highlighter": "^2.1.0",
+    "react-native-vector-icons": "^6.6.0",
+    "react-syntax-highlighter": "^11.0.2"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  }
+}
