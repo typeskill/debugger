@@ -1,17 +1,32 @@
 import React, { PureComponent } from 'react'
 import { Bridge, Document, Toolbar, Typer, Images, buildBridge, buildEmptyDocument } from '@typeskill/typer'
-import { KeyboardAvoidingView, View, StyleSheet, Switch, Text, Clipboard } from 'react-native'
+import {
+  KeyboardAvoidingView,
+  View,
+  StyleSheet,
+  Switch,
+  Text,
+  Clipboard,
+  YellowBox,
+  Dimensions,
+  ScaledSize,
+} from 'react-native'
 import { WToast } from 'react-native-smart-tip'
-import { DocumentSourceView, DocumentSourceViewProps } from 'DocumentSourceView'
-import Drawer from 'react-native-drawer'
+import { DocumentSourceView, DocumentSourceViewProps } from './DocumentSourceView'
+import SideMenu from 'react-native-side-menu'
+
+// Suppress warning from react-native-side-menu
+YellowBox.ignoreWarnings(['SideMenu'])
 
 interface State {
   document: Document
-  debug: boolean
+  highlightFocus: boolean
   editMode: boolean
+  isSourceVisible: boolean
+  windowWidth: number
 }
 
-const FONT_SIZE = 20
+const FONT_SIZE = 16
 const SECONDARY_COLOR = 'rgb(230, 230, 230)'
 
 const styles = StyleSheet.create({
@@ -27,32 +42,30 @@ const styles = StyleSheet.create({
   },
   headerControlsContainer: {
     justifyContent: 'center',
-    padding: 5,
-    alignSelf: 'flex-end',
+    flexDirection: 'row',
   },
   headerTitle: {
     fontFamily: 'monospace',
     textAlign: 'center',
-    fontSize: 18,
+    fontSize: 8,
   },
   headerControlText: {
     fontFamily: 'monospace',
-    fontSize: 12,
-    marginRight: 5,
+    fontSize: 8,
+    marginRight: 1,
   },
   header: {
     backgroundColor: SECONDARY_COLOR,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: 'column',
+    minHeight: 30,
+    justifyContent: 'center',
   },
   headerControl: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    marginRight: 6,
   },
-  docSourceViewer: {
-    flexGrow: 1,
-    flexShrink: 1,
+  body: {
     borderTopColor: 'gray',
     borderTopWidth: StyleSheet.hairlineWidth,
   },
@@ -86,7 +99,9 @@ export class Debugger extends PureComponent<DebuggerProps, State> {
   public state: State = {
     document: buildEmptyDocument(),
     editMode: true,
-    debug: false,
+    highlightFocus: false,
+    isSourceVisible: false,
+    windowWidth: Dimensions.get('window').width,
   }
 
   private toast(text: string) {
@@ -104,6 +119,10 @@ export class Debugger extends PureComponent<DebuggerProps, State> {
     }
   }
 
+  private handleOnWindowChange = ({ window }: { window: ScaledSize }) => {
+    this.setState({ windowWidth: window.width })
+  }
+
   private handleOnDocumentUpdate = (document: Document) => {
     this.setState({ document })
   }
@@ -113,11 +132,11 @@ export class Debugger extends PureComponent<DebuggerProps, State> {
       <Typer
         onDocumentUpdate={this.handleOnDocumentUpdate}
         document={this.state.document}
-        style={{ flex: 1 }}
+        style={[styles.body, { flex: 1 }]}
         documentStyle={[styles.documentStyle]}
         textStyle={styles.textStyle}
         readonly={!this.state.editMode}
-        debug={this.state.debug}
+        debug={this.state.highlightFocus}
         spacing={10}
         imageHooks={this.imageHooks}
         bridge={this.bridge}
@@ -128,11 +147,14 @@ export class Debugger extends PureComponent<DebuggerProps, State> {
 
   private renderDocSource() {
     return (
-      <DocumentSourceView
-        document={this.state.document}
-        style={styles.docSourceViewer}
-        {...this.props.documentSourceViewProps}
-      />
+      <View style={{ flex: 1 }}>
+        {this.renderDocHeader()}
+        <DocumentSourceView
+          document={this.state.document}
+          style={styles.body}
+          {...this.props.documentSourceViewProps}
+        />
+      </View>
     )
   }
 
@@ -144,36 +166,59 @@ export class Debugger extends PureComponent<DebuggerProps, State> {
         layout={this.props.toolbarLayout}
         document={this.state.document}
         bridge={this.bridge}
+        iconSize={24}
+        style={{ backgroundColor: SECONDARY_COLOR }}
         {...this.props.toolbarProps}
       />
     )
   }
 
   private renderControls() {
-    const { debug, editMode } = this.state
+    const { highlightFocus: debug, editMode, isSourceVisible } = this.state
     return (
       <View style={styles.headerControlsContainer}>
+        <View style={styles.headerControl}>
+          <Text style={styles.headerControlText}>Show source?</Text>
+          <Switch
+            value={isSourceVisible}
+            onValueChange={(isSourceVisible: boolean) => this.setState({ isSourceVisible })}
+          />
+        </View>
         <View style={styles.headerControl}>
           <Text style={styles.headerControlText}>Edit?</Text>
           <Switch value={editMode} onValueChange={(editMode: boolean) => this.setState({ editMode })} />
         </View>
         <View style={styles.headerControl}>
-          <Text style={styles.headerControlText}>Debug?</Text>
-          <Switch value={debug} onValueChange={(debug: boolean) => this.setState({ debug })} />
+          <Text style={styles.headerControlText}>Highlight focus?</Text>
+          <Switch value={debug} onValueChange={(highlightFocus: boolean) => this.setState({ highlightFocus })} />
         </View>
       </View>
     )
   }
 
-  private renderHeader() {
+  private renderDocHeader() {
+    const { isSourceVisible } = this.state
     return (
       <View style={styles.header}>
-        <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitle}>typeskill debugger</Text>
+        <View style={styles.headerControlsContainer}>
+          <View style={styles.headerControl}>
+            <Text style={styles.headerControlText}>Show source?</Text>
+            <Switch
+              value={isSourceVisible}
+              onValueChange={(isSourceVisible: boolean) => this.setState({ isSourceVisible })}
+            />
+          </View>
         </View>
-        {this.renderControls()}
       </View>
     )
+  }
+
+  private renderMainHeader() {
+    return <View style={styles.header}>{this.renderControls()}</View>
+  }
+
+  private handleOpenSide = (isSourceVisible: boolean) => {
+    this.setState({ isSourceVisible })
   }
 
   private renderBottomControls() {
@@ -181,19 +226,36 @@ export class Debugger extends PureComponent<DebuggerProps, State> {
     return editMode && this.renderToolbar()
   }
 
-  render() {
-    const { debug } = this.state
+  private renderBody() {
     return (
-      <Drawer content={this.renderDocSource()}>
-        <View style={{ flex: 1 }}>
-          <KeyboardAvoidingView style={{ flex: 1 }}>
-            {this.renderHeader()}
-            {this.renderTyper()}
-            {this.renderBottomControls()}
-            {debug && this.renderDocSource()}
-          </KeyboardAvoidingView>
-        </View>
-      </Drawer>
+      <View style={[{ flex: 1, backgroundColor: 'rgba(255,255,255,0.85)' }]}>
+        <KeyboardAvoidingView style={{ flex: 1 }}>
+          {this.renderMainHeader()}
+          {this.renderTyper()}
+          {this.renderBottomControls()}
+        </KeyboardAvoidingView>
+      </View>
+    )
+  }
+
+  public onComponentDidMount() {
+    Dimensions.addEventListener('change', this.handleOnWindowChange)
+  }
+
+  public onComponentWillUnmount() {
+    Dimensions.removeEventListener('change', this.handleOnWindowChange)
+  }
+
+  render() {
+    return (
+      <SideMenu
+        openMenuOffset={(this.state.windowWidth * 9) / 10}
+        isOpen={this.state.isSourceVisible}
+        onChange={this.handleOpenSide}
+        menu={this.renderDocSource()}
+      >
+        {this.renderBody()}
+      </SideMenu>
     )
   }
 }
