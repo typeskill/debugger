@@ -14,8 +14,19 @@
     <img src="https://img.shields.io/npm/l/@typeskill/typer.svg"/>
 </p>
 <p align="center">
-  <img src="images/screenshot-unfold.png" width="300">
-  <img src="images/screenshot-fold.png" width="300">
+  <img src="https://raw.githubusercontent.com/typeskill/debugger/HEAD/images/screenshot-unfold.png" width="300">
+  <img src="https://raw.githubusercontent.com/typeskill/debugger/HEAD/images/screenshot-fold.png" width="300">
+</p>
+<p align="center">
+    <a href="https://expo.io/@jsamr/typeskill-debugger">
+        <strong>Give the debugger a try on Expo</strong>
+    </a>
+    <br/><br/>
+    <a href="https://expo.io/@jsamr/typeskill-debugger">
+        <img src="https://raw.githubusercontent.com/typeskill/debugger/HEAD/images/qr.png" alt="Expo QR code">
+    </a>
+    <br/>
+    <a href="#trying-locally">You can also run it locally in seconds</a>
 </p>
 
 ## Setup
@@ -23,8 +34,6 @@
 > You must install the typeskill version you wish to test.
 
 ## Example (typescript)
-
-**Remark**: You must import and use `COPY_DOCUMENT_SOURCE_ACTION` constant when building the `Toolbar` layout to have access to "copy document source to clipboard" action.
 
 ```tsx
 // App.tsx
