@@ -26,7 +26,6 @@
         <img src="https://raw.githubusercontent.com/typeskill/debugger/HEAD/images/qr.png" alt="Expo QR code">
     </a>
     <br/>
-    <a href="#trying-locally">You can also run it locally in seconds</a>
 </p>
 
 ## Setup

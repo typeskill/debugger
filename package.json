@@ -1,6 +1,6 @@
 {
   "name": "@typeskill/debugger",
-  "version": "0.10.3",
+  "version": "0.10.5",
   "description": "A debug utility for typeskill.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
