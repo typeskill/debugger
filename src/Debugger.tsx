@@ -71,7 +71,10 @@ const styles = StyleSheet.create({
   },
 })
 
-export const COPY_DOCUMENT_SOURCE_ACTION = 'COPY_DOCUMENT_SOURCE'
+export enum DebuggerActions {
+  COPY_DOCUMENT_SOURCE = 'COPY_DOCUMENT_SOURCE',
+  ERASE_DOCUMENT = 'ERASE_DOCUMENT',
+}
 
 interface ImageSource {
   uri: string
@@ -84,6 +87,8 @@ export interface DebuggerProps {
   typerProps?: Partial<Typer.Props<any>>
   toolbarProps?: Partial<Toolbar.Props<any>>
   documentSourceViewProps?: Partial<DocumentSourceViewProps>
+  initialDocument?: Document
+  onDocumentUpdate?: (document: Document) => void
 }
 
 export class Debugger extends PureComponent<DebuggerProps, State> {
@@ -96,12 +101,17 @@ export class Debugger extends PureComponent<DebuggerProps, State> {
       this.toast(`${desc.source.name} successfully removed.`)
     },
   }
-  public state: State = {
-    document: buildEmptyDocument(),
-    editMode: true,
-    highlightFocus: false,
-    isSourceVisible: false,
-    windowWidth: Dimensions.get('window').width,
+  public state: State
+
+  public constructor(props: DebuggerProps) {
+    super(props)
+    this.state = {
+      document: props.initialDocument || buildEmptyDocument(),
+      editMode: true,
+      highlightFocus: false,
+      isSourceVisible: false,
+      windowWidth: Dimensions.get('window').width,
+    }
   }
 
   private toast(text: string) {
@@ -114,8 +124,11 @@ export class Debugger extends PureComponent<DebuggerProps, State> {
   }
 
   private handleOnPressCustomControl = (actionType: any) => {
-    if (actionType === COPY_DOCUMENT_SOURCE_ACTION) {
+    if (actionType === DebuggerActions.COPY_DOCUMENT_SOURCE) {
       this.handleOnPressDocSource()
+    }
+    if (actionType === DebuggerActions.ERASE_DOCUMENT) {
+      this.setState({ document: buildEmptyDocument() })
     }
   }
 
@@ -125,6 +138,8 @@ export class Debugger extends PureComponent<DebuggerProps, State> {
 
   private handleOnDocumentUpdate = (document: Document) => {
     this.setState({ document })
+    const { onDocumentUpdate } = this.props
+    onDocumentUpdate && onDocumentUpdate(document)
   }
 
   private renderTyper() {

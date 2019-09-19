@@ -31,7 +31,7 @@
 import React, { PureComponent } from 'react'
 import { PermissionsAndroid } from 'react-native'
 import { DocumentControlAction, Toolbar, Images, GenericControlAction, buildVectorIconControlSpec } from '@typeskill/typer'
-import { Debugger, COPY_DOCUMENT_SOURCE_ACTION } from '@typeskill/debugger'
+import { Debugger, DebuggerActions } from '@typeskill/debugger'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import ImagePicker from 'react-native-image-picker'
 
@@ -45,7 +45,7 @@ const toolbarLayout: Toolbar.Layout = [
   buildMaterialControlSpec(DocumentControlAction.SELECT_TEXT_UNDERLINE, 'format-underline'),
   buildMaterialControlSpec(DocumentControlAction.SELECT_TEXT_STRIKETHROUGH, 'format-strikethrough-variant'),
   buildMaterialControlSpec(DocumentControlAction.INSERT_IMAGE_AT_SELECTION, 'file-image'),
-  buildMaterialControlSpec(COPY_DOCUMENT_SOURCE_ACTION, 'clipboard-text-outline')
+  buildMaterialControlSpec(DebuggerActions.COPY_DOCUMENT_SOURCE, 'clipboard-text-outline')
 ]
 
 interface ImageSource {
