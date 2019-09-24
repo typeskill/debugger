@@ -10,6 +10,7 @@ import {
   YellowBox,
   Dimensions,
   ScaledSize,
+  Platform,
 } from 'react-native'
 import { WToast } from 'react-native-smart-tip'
 import { DocumentSourceView, DocumentSourceViewProps } from './DocumentSourceView'
@@ -244,7 +245,7 @@ export class Debugger extends PureComponent<DebuggerProps, State> {
   private renderBody() {
     return (
       <View style={[{ flex: 1, backgroundColor: 'rgba(255,255,255,0.85)' }]}>
-        <KeyboardAvoidingView style={{ flex: 1 }}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'android' ? undefined : 'padding'} style={{ flex: 1 }}>
           {this.renderMainHeader()}
           {this.renderTyper()}
           {this.renderBottomControls()}
