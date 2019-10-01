@@ -29,6 +29,7 @@ interface State {
 
 const FONT_SIZE = 16
 const SECONDARY_COLOR = 'rgb(230, 230, 230)'
+const monospace = Platform.select({ ios: 'Courier', android: 'monospace' })
 
 const styles = StyleSheet.create({
   documentStyle: {
@@ -46,12 +47,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   headerTitle: {
-    fontFamily: 'monospace',
+    fontFamily: monospace,
     textAlign: 'center',
     fontSize: 8,
   },
   headerControlText: {
-    fontFamily: 'monospace',
+    fontFamily: monospace,
     fontSize: 8,
     marginRight: 1,
   },
