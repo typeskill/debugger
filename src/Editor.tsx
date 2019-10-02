@@ -22,6 +22,10 @@ const FONT_SIZE = 16
 const SECONDARY_COLOR = 'rgb(230, 230, 230)'
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: 'rgba(255,255,255,0.85)',
+  },
   documentStyle: {
     maxWidth: 500,
   },
@@ -29,8 +33,7 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE,
   },
   body: {
-    borderTopColor: 'gray',
-    borderTopWidth: StyleSheet.hairlineWidth,
+    flex: 1,
   },
 })
 
@@ -97,12 +100,12 @@ const Editor = React.memo(function Editor({
     }, []),
   )
   return (
-    <View style={[{ flex: 1, backgroundColor: 'rgba(255,255,255,0.85)' }]}>
+    <View style={styles.root}>
       <KeyboardAvoidingView behavior={Platform.OS === 'android' ? undefined : 'padding'} style={{ flex: 1 }}>
         <Typer
           onDocumentUpdate={onDocumentUpdate}
           document={document}
-          style={[styles.body, { flex: 1 }]}
+          style={styles.body}
           documentStyle={[styles.documentStyle]}
           textStyle={styles.textStyle}
           readonly={!editMode}
