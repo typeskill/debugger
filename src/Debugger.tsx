@@ -1,23 +1,15 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, memo } from 'react'
+import { StyleSheet, SafeAreaView, Button, Clipboard, KeyboardAvoidingView, Platform } from 'react-native'
+import { WToast } from 'react-native-smart-tip'
 import { Document, Toolbar, Typer, Images, buildEmptyDocument } from '@typeskill/typer'
-import { DocumentSourceViewProps, DocumentSourceView } from './DocumentSourceView'
-import { DebuggerActions } from './DebuggerActions'
 import { NavigationNativeContainer } from '@react-navigation/native'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import { Editor } from './Editor'
 import { Config } from './Config'
-import { StyleSheet, SafeAreaView, Button, Clipboard, KeyboardAvoidingView, Platform } from 'react-native'
-import { WToast } from 'react-native-smart-tip'
+import { DocumentSourceViewProps, DocumentSourceView } from './DocumentSourceView'
+import { DebuggerActions } from './DebuggerActions'
 
 const Tabs = createMaterialTopTabNavigator()
-
-interface State {
-  document: Document
-  highlightFocus: boolean
-  editMode: boolean
-  isSourceVisible: boolean
-  windowWidth: number
-}
 
 const SECONDARY_COLOR = 'rgb(230, 230, 230)'
 
@@ -47,7 +39,7 @@ export interface DebuggerProps {
   onDocumentUpdate?: (document: Document) => void
 }
 
-export const Debugger = React.memo(function Debugger({
+export const Debugger = memo(function Debugger({
   toolbarLayout,
   toolbarProps,
   documentSourceViewProps,

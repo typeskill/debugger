@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react'
+import React, { useCallback, useMemo, useRef, memo } from 'react'
 import { Bridge, Document, Toolbar, Typer, Images, buildBridge } from '@typeskill/typer'
 import { StyleSheet, View, Keyboard } from 'react-native'
 import { DebuggerActions } from './DebuggerActions'
@@ -42,7 +42,7 @@ interface ImageSource {
   name: string
 }
 
-const Editor = React.memo(function Editor({
+const Editor = memo(function Editor({
   document,
   onPressCustomControl,
   onDocumentUpdate,

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { StyleSheet, View, Text, Switch } from 'react-native'
 
 const styles = StyleSheet.create({
@@ -29,7 +29,7 @@ export interface ConfigProps {
   onHightlightFocusChange: (highlightFocus: boolean) => void
 }
 
-export const Config = React.memo(function Config({
+export const Config = memo(function Config({
   editMode,
   onEditModeChange,
   highlightFocus,
