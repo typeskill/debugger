@@ -34,6 +34,8 @@
 
 ## Example (typescript)
 
+*If you're not familiar with typescript, just copy / paste this snippet in [Typeskill playground](https://www.typescriptlang.org/play/?target=6&jsx=3) and read the transpiled source.*
+
 ```tsx
 // App.tsx
 import React, { memo, useCallback } from 'react'
@@ -84,10 +86,12 @@ const pickImageAsync = async () => {
 }
 
 
-export default App = memo(() => {
+const App = memo(() => {
   return (
     <Debugger pickOneImage={pickImageAsync} toolbarLayout={toolbarLayout} />
   )
 })
+
+export default App
 
 ```
