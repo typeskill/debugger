@@ -36,7 +36,7 @@
 
 ```tsx
 // App.tsx
-import React, { PureComponent } from 'react'
+import React, { memo, useCallback } from 'react'
 import { PermissionsAndroid } from 'react-native'
 import { DocumentControlAction, Toolbar, Images, GenericControlAction, buildVectorIconControlSpec } from '@typeskill/typer'
 import { Debugger, DebuggerActions } from '@typeskill/debugger'
@@ -61,34 +61,33 @@ interface ImageSource {
   name: string
 }
 
-export default class App extends PureComponent {
-
-  private pickOneImage = async () => {
-    await PermissionsAndroid.request('android.permission.CAMERA')
-    return new Promise<Images.Description<ImageSource>>((res, rej) => {
-      ImagePicker.showImagePicker({}, (response) => {
-        if (response.didCancel) {
-          rej(new Error('User cancelled.'))
-        }
-        if (response.error) {
-          rej(new Error(response.error))
-        }
-        res({
-          source: {
-            uri: response.uri,
-            name: response.fileName,
-          },
-          width: response.width,
-          height: response.height
-        } as Images.Description<ImageSource>)
-      })
+const pickImageAsync = async () => {
+  await PermissionsAndroid.request('android.permission.CAMERA')
+  return new Promise<Images.Description<ImageSource>>((res, rej) => {
+    ImagePicker.showImagePicker({}, (response) => {
+      if (response.didCancel) {
+        rej(new Error('User cancelled.'))
+      }
+      if (response.error) {
+        rej(new Error(response.error))
+      }
+      res({
+        source: {
+          uri: response.uri,
+          name: response.fileName,
+        },
+        width: response.width,
+        height: response.height
+      } as Images.Description<ImageSource>)
     })
-  }
-
-  render() {
-    return (
-      <Debugger pickOneImage={this.pickOneImage} toolbarLayout={toolbarLayout} />
-    )
-  }
+  })
 }
+
+
+export default App = memo(() => {
+  return (
+    <Debugger pickOneImage={pickImageAsync} toolbarLayout={toolbarLayout} />
+  )
+})
+
 ```
