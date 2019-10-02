@@ -4,18 +4,20 @@ import { StyleSheet, View, Text, Switch } from 'react-native'
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'stretch',
   },
   root: {
     margin: 30,
     flex: 1,
-    flexBasis: 500,
+    alignItems: 'stretch',
+    maxWidth: 300,
   },
   controlText: {
     //
   },
   control: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
   },
 })

@@ -3,6 +3,7 @@ import { Bridge, Document, Toolbar, Typer, Images, buildBridge } from '@typeskil
 import { StyleSheet, View, Keyboard } from 'react-native'
 import { DebuggerActions } from './DebuggerActions'
 import { useNavigation, useFocusEffect } from '@react-navigation/core'
+import { ScrollView } from 'react-native-gesture-handler'
 
 interface EditorProps {
   document: Document
@@ -100,6 +101,7 @@ const Editor = React.memo(function Editor({
         imageHooks={imageHooks}
         bridge={bridge}
         ref={ref as any}
+        ScrollView={ScrollView}
         {...typerProps}
       />
       <Toolbar
