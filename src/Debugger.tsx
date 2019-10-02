@@ -1,14 +1,15 @@
-import React, { PureComponent } from 'react'
+import React, { useState, useCallback } from 'react'
 import { Document, Toolbar, Typer, Images, buildEmptyDocument } from '@typeskill/typer'
 import { DocumentSourceViewProps, DocumentSourceView } from './DocumentSourceView'
 import { DebuggerActions } from './DebuggerActions'
 import { NavigationNativeContainer } from '@react-navigation/native'
-import { createStackNavigator } from '@react-navigation/stack'
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import { Editor } from './Editor'
 import { Config } from './Config'
-import { StyleSheet, Dimensions, ScaledSize, SafeAreaView } from 'react-native'
+import { StyleSheet, SafeAreaView, Button, Clipboard } from 'react-native'
+import { WToast } from 'react-native-smart-tip'
 
-const Stack = createStackNavigator()
+const Tabs = createMaterialTopTabNavigator()
 
 interface State {
   document: Document
@@ -27,25 +28,6 @@ const styles = StyleSheet.create({
   textStyle: {
     fontSize: 14,
   },
-  headerTitleContainer: {
-    padding: 5,
-    justifyContent: 'center',
-  },
-  headerControlsContainer: {
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  header: {
-    backgroundColor: SECONDARY_COLOR,
-    flexDirection: 'column',
-    minHeight: 30,
-    justifyContent: 'center',
-  },
-  headerControl: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: 6,
-  },
   body: {
     borderTopColor: 'gray',
     borderTopWidth: StyleSheet.hairlineWidth,
@@ -62,94 +44,77 @@ export interface DebuggerProps {
   onDocumentUpdate?: (document: Document) => void
 }
 
-export class Debugger extends PureComponent<DebuggerProps, State> {
-  public state: State
-
-  public constructor(props: DebuggerProps) {
-    super(props)
-    this.state = {
-      document: props.initialDocument || buildEmptyDocument(),
-      editMode: true,
-      highlightFocus: false,
-      isSourceVisible: false,
-      windowWidth: Dimensions.get('window').width,
+export const Debugger = React.memo(function Debugger({
+  toolbarLayout,
+  toolbarProps,
+  documentSourceViewProps,
+  initialDocument,
+  onDocumentUpdate,
+  pickOneImage,
+  typerProps,
+}: DebuggerProps) {
+  const [document, setDocument] = useState<Document>(initialDocument || buildEmptyDocument())
+  const [editMode, setEditMode] = useState<boolean>(true)
+  const [highlightFocus, setHighlightFocus] = useState<boolean>(false)
+  const toast = useCallback((text: string) => {
+    WToast.show({ data: text, backgroundColor: SECONDARY_COLOR, textColor: 'black' })
+  }, [])
+  const handleOnDocumentUpdate = useCallback((nextDocument: Document) => {
+    setDocument(nextDocument)
+    onDocumentUpdate && onDocumentUpdate(nextDocument)
+  }, [])
+  const handleOnCopySource = useCallback(() => {
+    Clipboard.setString(JSON.stringify(document, null, 2))
+    toast('Document source copied to clipboard')
+  }, [document])
+  const handleOnPressCustomControl = useCallback((action: DebuggerActions) => {
+    if (action === DebuggerActions.COPY_DOCUMENT_SOURCE) {
+      handleOnCopySource()
+    } else if (action === DebuggerActions.ERASE_DOCUMENT) {
+      setDocument(buildEmptyDocument())
     }
-  }
+  }, [])
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <NavigationNativeContainer>
+        <Tabs.Navigator swipeEnabled={true}>
+          <Tabs.Screen name="editor" options={{ title: 'Editor' }}>
+            {() => (
+              <Editor
+                toolbarLayout={toolbarLayout}
+                onDocumentUpdate={handleOnDocumentUpdate}
+                onPressCustomControl={handleOnPressCustomControl}
+                toolbarProps={toolbarProps}
+                typerProps={typerProps}
+                pickOneImage={pickOneImage}
+                document={document}
+                editMode={editMode}
+                highlightFocus={highlightFocus}
+                toast={toast}
+              />
+            )}
+          </Tabs.Screen>
+          <Tabs.Screen name="source" options={{ title: 'Source' }}>
+            {() => (
+              <DocumentSourceView document={document} style={styles.body} {...documentSourceViewProps}>
+                <Button title="copy source" onPress={handleOnCopySource} />
+              </DocumentSourceView>
+            )}
+          </Tabs.Screen>
+          <Tabs.Screen name="config" options={{ title: 'Config' }}>
+            {() => (
+              <Config
+                onHightlightFocusChange={setHighlightFocus}
+                onEditModeChange={setEditMode}
+                highlightFocus={highlightFocus}
+                editMode={editMode}
+              />
+            )}
+          </Tabs.Screen>
+        </Tabs.Navigator>
+      </NavigationNativeContainer>
+    </SafeAreaView>
+  )
+})
 
-  private handleOnPressCustomControl = (actionType: any) => {
-    if (actionType === DebuggerActions.ERASE_DOCUMENT) {
-      this.setState({ document: buildEmptyDocument() })
-    }
-  }
-
-  private handleOnWindowChange = ({ window }: { window: ScaledSize }) => {
-    this.setState({ windowWidth: window.width })
-  }
-
-  private handleOnDocumentUpdate = (document: Document) => {
-    this.setState({ document })
-    const { onDocumentUpdate } = this.props
-    onDocumentUpdate && onDocumentUpdate(document)
-  }
-
-  private handleOnHighlightFocusChange = (highlightFocus: boolean) => {
-    this.setState({ highlightFocus })
-  }
-
-  private handleOnEditModeChange = (editMode: boolean) => {
-    this.setState({ editMode })
-  }
-
-  public onComponentDidMount() {
-    Dimensions.addEventListener('change', this.handleOnWindowChange)
-  }
-
-  public onComponentWillUnmount() {
-    Dimensions.removeEventListener('change', this.handleOnWindowChange)
-  }
-
-  public render() {
-    const { toolbarLayout, toolbarProps, typerProps, pickOneImage } = this.props
-    const { editMode, highlightFocus } = this.state
-    return (
-      <SafeAreaView style={{ flex: 1 }}>
-        <NavigationNativeContainer>
-          <Stack.Navigator>
-            <Stack.Screen name="editor" options={{ title: 'Typeskill Debugger', header: null }}>
-              {() => (
-                <Editor
-                  toolbarLayout={toolbarLayout}
-                  {...this.state}
-                  onDocumentUpdate={this.handleOnDocumentUpdate}
-                  onPressCustomControl={this.handleOnPressCustomControl}
-                  toolbarProps={toolbarProps}
-                  typerProps={typerProps}
-                  pickOneImage={pickOneImage}
-                />
-              )}
-            </Stack.Screen>
-            <Stack.Screen name="config" options={{ title: 'Configuration' }}>
-              {() => (
-                <Config
-                  onHightlightFocusChange={this.handleOnHighlightFocusChange}
-                  onEditModeChange={this.handleOnEditModeChange}
-                  highlightFocus={highlightFocus}
-                  editMode={editMode}
-                />
-              )}
-            </Stack.Screen>
-            <Stack.Screen name="source" options={{ title: 'Document Source' }}>
-              {() => (
-                <DocumentSourceView
-                  document={this.state.document}
-                  style={styles.body}
-                  {...this.props.documentSourceViewProps}
-                />
-              )}
-            </Stack.Screen>
-          </Stack.Navigator>
-        </NavigationNativeContainer>
-      </SafeAreaView>
-    )
-  }
-}
+Debugger.displayName = 'Debugger'

@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useRef } from 'react'
 import { Bridge, Document, Toolbar, Typer, Images, buildBridge } from '@typeskill/typer'
-import { KeyboardAvoidingView, StyleSheet, Clipboard, Platform, View, Keyboard } from 'react-native'
-import { WToast } from 'react-native-smart-tip'
+import { KeyboardAvoidingView, StyleSheet, Platform, View, Keyboard } from 'react-native'
 import { DebuggerActions } from './DebuggerActions'
 import { useNavigation, useFocusEffect } from '@react-navigation/core'
 
@@ -9,8 +8,8 @@ interface EditorProps {
   document: Document
   highlightFocus: boolean
   editMode: boolean
-  windowWidth: number
   toolbarLayout: Toolbar.Layout
+  toast: (text: string) => void
   pickOneImage?: (actionOptions?: any) => Promise<Images.Description<Images.StandardSource>>
   typerProps?: Partial<Typer.Props<any>>
   toolbarProps?: Partial<Toolbar.Props<any>>
@@ -52,11 +51,10 @@ const Editor = React.memo(function Editor({
   pickOneImage,
   toolbarLayout,
   toolbarProps,
+  toast,
 }: EditorProps) {
   const { navigate } = useNavigation()
-  const toast = useCallback((text: string) => {
-    WToast.show({ data: text, backgroundColor: SECONDARY_COLOR, textColor: 'black' })
-  }, [])
+
   const bridge: Bridge<ImageSource> = useMemo<Bridge<ImageSource>>(buildBridge, [])
   const imageHooks: Images.Hooks<ImageSource> = useMemo(() => {
     return {
@@ -68,25 +66,14 @@ const Editor = React.memo(function Editor({
       },
     }
   }, [])
-  const handleOnPressDocSource = useCallback(() => {
-    Clipboard.setString(JSON.stringify(document, null, 2))
-    toast('Document source copied to clipboard')
-  }, [document])
   const handleOnPressCustomControl = useCallback(
     (action: DebuggerActions) => {
-      switch (action) {
-        case DebuggerActions.OPEN_CONFIG:
-          navigate('config')
-          break
-        case DebuggerActions.VIEW_SOURCE:
-          navigate('source')
-          break
-        case DebuggerActions.COPY_DOCUMENT_SOURCE:
-          handleOnPressDocSource()
-          break
-        default:
-          onPressCustomControl && onPressCustomControl(action)
+      if (action === DebuggerActions.OPEN_CONFIG) {
+        navigate('config')
+      } else if (action === DebuggerActions.VIEW_SOURCE) {
+        navigate('source')
       }
+      onPressCustomControl && onPressCustomControl(action)
     },
     [onPressCustomControl],
   )
@@ -106,7 +93,7 @@ const Editor = React.memo(function Editor({
           onDocumentUpdate={onDocumentUpdate}
           document={document}
           style={styles.body}
-          documentStyle={[styles.documentStyle]}
+          documentStyle={styles.documentStyle}
           textStyle={styles.textStyle}
           readonly={!editMode}
           debug={highlightFocus}
