@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef } from 'react'
 import { Bridge, Document, Toolbar, Typer, Images, buildBridge } from '@typeskill/typer'
-import { KeyboardAvoidingView, StyleSheet, Platform, View, Keyboard } from 'react-native'
+import { StyleSheet, View, Keyboard } from 'react-native'
 import { DebuggerActions } from './DebuggerActions'
 import { useNavigation, useFocusEffect } from '@react-navigation/core'
 
@@ -88,32 +88,30 @@ const Editor = React.memo(function Editor({
   )
   return (
     <View style={styles.root}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'android' ? undefined : 'padding'} style={{ flex: 1 }}>
-        <Typer
-          onDocumentUpdate={onDocumentUpdate}
-          document={document}
-          style={styles.body}
-          documentStyle={styles.documentStyle}
-          textStyle={styles.textStyle}
-          readonly={!editMode}
-          debug={highlightFocus}
-          spacing={10}
-          imageHooks={imageHooks}
-          bridge={bridge}
-          ref={ref as any}
-          {...typerProps}
-        />
-        <Toolbar
-          onPressCustomControl={handleOnPressCustomControl as any}
-          pickOneImage={pickOneImage}
-          layout={toolbarLayout}
-          document={document}
-          bridge={bridge}
-          iconSize={24}
-          style={{ backgroundColor: SECONDARY_COLOR }}
-          {...toolbarProps}
-        />
-      </KeyboardAvoidingView>
+      <Typer
+        onDocumentUpdate={onDocumentUpdate}
+        document={document}
+        style={styles.body}
+        documentStyle={styles.documentStyle}
+        textStyle={styles.textStyle}
+        readonly={!editMode}
+        debug={highlightFocus}
+        spacing={10}
+        imageHooks={imageHooks}
+        bridge={bridge}
+        ref={ref as any}
+        {...typerProps}
+      />
+      <Toolbar
+        onPressCustomControl={handleOnPressCustomControl as any}
+        pickOneImage={pickOneImage}
+        layout={toolbarLayout}
+        document={document}
+        bridge={bridge}
+        iconSize={24}
+        style={{ backgroundColor: SECONDARY_COLOR }}
+        {...toolbarProps}
+      />
     </View>
   )
 })

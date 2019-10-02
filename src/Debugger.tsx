@@ -6,7 +6,7 @@ import { NavigationNativeContainer } from '@react-navigation/native'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import { Editor } from './Editor'
 import { Config } from './Config'
-import { StyleSheet, SafeAreaView, Button, Clipboard } from 'react-native'
+import { StyleSheet, SafeAreaView, Button, Clipboard, KeyboardAvoidingView, Platform } from 'react-native'
 import { WToast } from 'react-native-smart-tip'
 
 const Tabs = createMaterialTopTabNavigator()
@@ -22,6 +22,9 @@ interface State {
 const SECONDARY_COLOR = 'rgb(230, 230, 230)'
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   documentStyle: {
     maxWidth: 500,
   },
@@ -75,44 +78,46 @@ export const Debugger = React.memo(function Debugger({
     }
   }, [])
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <NavigationNativeContainer>
-        <Tabs.Navigator swipeEnabled={true}>
-          <Tabs.Screen name="editor" options={{ title: 'Editor' }}>
-            {() => (
-              <Editor
-                toolbarLayout={toolbarLayout}
-                onDocumentUpdate={handleOnDocumentUpdate}
-                onPressCustomControl={handleOnPressCustomControl}
-                toolbarProps={toolbarProps}
-                typerProps={typerProps}
-                pickOneImage={pickOneImage}
-                document={document}
-                editMode={editMode}
-                highlightFocus={highlightFocus}
-                toast={toast}
-              />
-            )}
-          </Tabs.Screen>
-          <Tabs.Screen name="source" options={{ title: 'Source' }}>
-            {() => (
-              <DocumentSourceView document={document} style={styles.body} {...documentSourceViewProps}>
-                <Button title="copy source" onPress={handleOnCopySource} />
-              </DocumentSourceView>
-            )}
-          </Tabs.Screen>
-          <Tabs.Screen name="config" options={{ title: 'Config' }}>
-            {() => (
-              <Config
-                onHightlightFocusChange={setHighlightFocus}
-                onEditModeChange={setEditMode}
-                highlightFocus={highlightFocus}
-                editMode={editMode}
-              />
-            )}
-          </Tabs.Screen>
-        </Tabs.Navigator>
-      </NavigationNativeContainer>
+    <SafeAreaView style={styles.flex}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'android' ? undefined : 'padding'} style={styles.flex}>
+        <NavigationNativeContainer>
+          <Tabs.Navigator swipeEnabled={true}>
+            <Tabs.Screen name="editor" options={{ title: 'Editor' }}>
+              {() => (
+                <Editor
+                  toolbarLayout={toolbarLayout}
+                  onDocumentUpdate={handleOnDocumentUpdate}
+                  onPressCustomControl={handleOnPressCustomControl}
+                  toolbarProps={toolbarProps}
+                  typerProps={typerProps}
+                  pickOneImage={pickOneImage}
+                  document={document}
+                  editMode={editMode}
+                  highlightFocus={highlightFocus}
+                  toast={toast}
+                />
+              )}
+            </Tabs.Screen>
+            <Tabs.Screen name="source" options={{ title: 'Source' }}>
+              {() => (
+                <DocumentSourceView document={document} style={styles.body} {...documentSourceViewProps}>
+                  <Button title="copy source" onPress={handleOnCopySource} />
+                </DocumentSourceView>
+              )}
+            </Tabs.Screen>
+            <Tabs.Screen name="config" options={{ title: 'Config' }}>
+              {() => (
+                <Config
+                  onHightlightFocusChange={setHighlightFocus}
+                  onEditModeChange={setEditMode}
+                  highlightFocus={highlightFocus}
+                  editMode={editMode}
+                />
+              )}
+            </Tabs.Screen>
+          </Tabs.Navigator>
+        </NavigationNativeContainer>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   )
 })
