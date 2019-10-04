@@ -14,8 +14,8 @@
     <img src="https://img.shields.io/npm/l/@typeskill/typer.svg"/>
 </p>
 <p align="center">
-  <img src="https://raw.githubusercontent.com/typeskill/debugger/HEAD/images/screenshot-unfold.png" width="300">
   <img src="https://raw.githubusercontent.com/typeskill/debugger/HEAD/images/screenshot-fold.png" width="300">
+  <img src="https://raw.githubusercontent.com/typeskill/debugger/HEAD/images/screenshot-unfold.png" width="300">
 </p>
 <p align="center">
     <a href="https://expo.io/@jsamr/typeskill-debugger">
