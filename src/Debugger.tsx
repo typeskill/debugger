@@ -3,7 +3,11 @@ import { StyleSheet, SafeAreaView, Button, Clipboard, KeyboardAvoidingView, Plat
 import { WToast } from 'react-native-smart-tip'
 import { Document, Toolbar, Typer, Images, buildEmptyDocument } from '@typeskill/typer'
 import { NavigationNativeContainer } from '@react-navigation/native'
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
+import {
+  createMaterialTopTabNavigator,
+  MaterialTopTabBarOptions,
+  MaterialTopTabNavigationOptions,
+} from '@react-navigation/material-top-tabs'
 import { Editor } from './Editor'
 import { Config } from './Config'
 import { DocumentSourceViewProps, DocumentSourceView } from './DocumentSourceView'
@@ -39,6 +43,11 @@ export interface DebuggerProps {
   onDocumentUpdate?: (document: Document) => void
 }
 
+const topBarOptions: MaterialTopTabBarOptions = { scrollEnabled: false }
+const editorScreenConfig: MaterialTopTabNavigationOptions = { title: 'Editor' }
+const sourceScreenConfig: MaterialTopTabNavigationOptions = { title: 'Source' }
+const configScreenConfig: MaterialTopTabNavigationOptions = { title: 'Config' }
+
 export const Debugger = memo(function Debugger({
   toolbarLayout,
   toolbarProps,
@@ -73,8 +82,8 @@ export const Debugger = memo(function Debugger({
     <SafeAreaView style={styles.flex}>
       <KeyboardAvoidingView behavior={Platform.OS === 'android' ? undefined : 'padding'} style={styles.flex}>
         <NavigationNativeContainer>
-          <Tabs.Navigator swipeEnabled={true}>
-            <Tabs.Screen name="editor" options={{ title: 'Editor' }}>
+          <Tabs.Navigator swipeEnabled={true} tabBarOptions={topBarOptions}>
+            <Tabs.Screen name="editor" options={editorScreenConfig}>
               {() => (
                 <Editor
                   toolbarLayout={toolbarLayout}
@@ -90,14 +99,14 @@ export const Debugger = memo(function Debugger({
                 />
               )}
             </Tabs.Screen>
-            <Tabs.Screen name="source" options={{ title: 'Source' }}>
+            <Tabs.Screen name="source" options={sourceScreenConfig}>
               {() => (
                 <DocumentSourceView document={document} style={styles.body} {...documentSourceViewProps}>
                   <Button title="copy source" onPress={handleOnCopySource} />
                 </DocumentSourceView>
               )}
             </Tabs.Screen>
-            <Tabs.Screen name="config" options={{ title: 'Config' }}>
+            <Tabs.Screen name="config" options={configScreenConfig}>
               {() => (
                 <Config
                   onHightlightFocusChange={setHighlightFocus}
