@@ -2,7 +2,7 @@ import React, { useState, useCallback, memo } from 'react'
 import { StyleSheet, SafeAreaView, Button, Clipboard, KeyboardAvoidingView, Platform } from 'react-native'
 import { WToast } from 'react-native-smart-tip'
 import { Document, Toolbar, Typer, Images, buildEmptyDocument } from '@typeskill/typer'
-import { NavigationNativeContainer } from '@react-navigation/native'
+import { NavigationContainer } from '@react-navigation/native'
 import {
   createMaterialTopTabNavigator,
   MaterialTopTabBarOptions,
@@ -81,7 +81,7 @@ export const Debugger = memo(function Debugger({
   return (
     <SafeAreaView style={styles.flex}>
       <KeyboardAvoidingView behavior={Platform.OS === 'android' ? undefined : 'padding'} style={styles.flex}>
-        <NavigationNativeContainer>
+        <NavigationContainer>
           <Tabs.Navigator swipeEnabled={true} tabBarOptions={topBarOptions}>
             <Tabs.Screen name="editor" options={editorScreenConfig}>
               {() => (
@@ -117,7 +117,7 @@ export const Debugger = memo(function Debugger({
               )}
             </Tabs.Screen>
           </Tabs.Navigator>
-        </NavigationNativeContainer>
+        </NavigationContainer>
       </KeyboardAvoidingView>
     </SafeAreaView>
   )
